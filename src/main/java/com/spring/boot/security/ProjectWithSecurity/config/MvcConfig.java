@@ -21,5 +21,7 @@ public class MvcConfig implements WebMvcConfigurer {
         // по пути file:// - место где-то в файловой системе, uploadPath - абсолютный путь
         registry.addResourceHandler("/img/**")
                 .addResourceLocations("file://" + uploadPath + "/");
+        registry.addResourceHandler("/static/**")
+                .addResourceLocations("classpath:/static/");
     }
 }
