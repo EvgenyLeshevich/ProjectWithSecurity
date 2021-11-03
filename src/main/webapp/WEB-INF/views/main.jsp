@@ -16,9 +16,12 @@
 </div>
 
 <div>
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         <input type="text" name="text" placeholder="Введите сообщение"/>
         <input type="text" name="tag" placeholder="Тэг"/>
+<%--        Загрузка файлов--%>
+        <input type="file" name="file">
+
         <input type="hidden" name="_csrf" value="${_csrf.token}" />
         <button type="submit">Добавить</button>
     </form>
@@ -37,6 +40,11 @@
             <td>${message.text}</td>
             <td>${message.tag}</td>
             <td>${message.authorName}</td>
+            <div>
+                <c:if test="${!message.filename}" >
+                <img src="/img/${message.filename}">
+                </c:if>
+            </div>
             <p></p>
         </tr>
     </div>
