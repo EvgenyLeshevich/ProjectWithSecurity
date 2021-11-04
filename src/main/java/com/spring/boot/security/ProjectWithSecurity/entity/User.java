@@ -16,6 +16,9 @@ public class User implements UserDetails {
     private String password;
     private boolean active;
 
+    private String email;
+    private String activationCode;
+
     // @ElementCollection - формирует сам дополнительную таблицу по хранению Enum
     // fetch - это параметр который определяет как данные значения будут подгружаться относительно основной сущности
     // когда мы загружаем пользователя его роли мы храним в отдельной таблице
@@ -27,6 +30,11 @@ public class User implements UserDetails {
     // @Enumerated(EnumType.STRING) - храним enum в виде строки
     @Enumerated(EnumType.STRING)
     private Set<Role> roles;
+
+    // Проверяем является ли пользователь админом
+    public boolean isAdmin(){
+        return roles.contains(Role.ADMIN);
+    }
 
     public Long getId() {
         return id;
@@ -91,5 +99,21 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return getRoles();
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getActivationCode() {
+        return activationCode;
+    }
+
+    public void setActivationCode(String activationCode) {
+        this.activationCode = activationCode;
     }
 }
