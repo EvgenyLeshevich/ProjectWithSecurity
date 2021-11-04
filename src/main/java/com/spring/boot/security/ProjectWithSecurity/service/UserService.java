@@ -20,7 +20,7 @@ public class UserService implements UserDetailsService {
     private UserRepo userRepo;
 
     @Autowired
-    private MainSender mainSender;
+    private MainSenderService mainSender;
 
     // Возвращаем UserDetails - в нашем случае User
     @Override

@@ -59,7 +59,7 @@
             <td>${message.authorName}</td>
             <div>
                 <c:if test="${!message.filename}" >
-                <img src="/img/${message.filename}">
+                <img src="/img/${message.filename}" alt="">
                 </c:if>
             </div>
             <p></p>

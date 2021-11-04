@@ -30,7 +30,7 @@ public class RegistrationController {
         return "redirect:/login";
     }
 
-    // Обработка подтвержения аккаунта
+    // Обработка подтверждения аккаунта
     @GetMapping("/activate/{code}")
     public String activate(Model model, @PathVariable String code){
         boolean isActivated = userService.activateUser(code);
