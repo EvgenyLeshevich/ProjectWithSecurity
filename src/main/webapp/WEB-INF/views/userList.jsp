@@ -18,7 +18,8 @@ List of users
     <c:forEach items="${users}" var="user">
         <tr>
             <td>${user.username}</td>
-            <td><c:forEach items="${user.roles}" var="role">${role} </c:forEach></td>
+<%--            <td><c:forEach items="${user.roles}" var="role">${role} </c:forEach></td>--%>
+            <td>${user.roles}</td>
             <td><a href="/user/${user.id}">Edit</a> </td>
         </tr>
     </c:forEach>

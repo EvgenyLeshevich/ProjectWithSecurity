@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 
-import java.util.Collections;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -35,7 +35,7 @@ public class UserService implements UserDetailsService {
             return false;
         }
 
-        user.setActive(true);
+        user.setActive(false);
         user.setRoles(Collections.singleton(Role.USER)); // Если у нас всего одно значение, а параметр принимает Set то мы используем Collections.singleton() - который создаёт Set с одним значением
         // задаём активационный код, генерируем его с помощью UUID.randomUUID().toString()
         // как только пользователь перейдёт по ссылке почта будет подтверждена
@@ -43,6 +43,12 @@ public class UserService implements UserDetailsService {
 
         userRepo.save(user);
 
+        sendMessage(user);
+
+        return true;
+    }
+
+    private void sendMessage(User user) {
         // отправка оповещения пользователю если у него есть почта
         // !StringUtils.isEmpty(user.getEmail()) - проверяет что строчки не равны null и не пустые
         if(!StringUtils.isEmpty(user.getEmail())){
@@ -55,8 +61,6 @@ public class UserService implements UserDetailsService {
 
             mainSender.send(user.getEmail(), "Activation code", message);
         }
-
-        return true;
     }
 
     public boolean activateUser(String code) {
@@ -69,9 +73,66 @@ public class UserService implements UserDetailsService {
 
         // Подтверждение что пользователь подтвердил почту
         user.setActivationCode(null);
+        user.setActive(true);
 
         userRepo.save(user);
 
         return true;
+    }
+
+    public List<User> findAll() {
+        return userRepo.findAll();
+    }
+
+    public void saveUser(User user, String username, Map<String, String> form) {
+        user.setUsername(username);
+
+        // Получаем список ролей и переводим их из Enum в String
+        Set<String> roles = Arrays.stream(Role.values())
+                .map(Role::name)
+                .collect(Collectors.toSet());
+
+        user.getRoles().clear();
+
+        // Проверяем что данная форма содержит роли для пользователя
+        // И поскольку у нас в нашем списке присутствуют доп значения(токены и айдишники) то мы их отфильтруем
+        for (String key :
+                form.keySet()) {
+            if (roles.contains(key)){
+                user.getRoles().add(Role.valueOf(key));
+            }
+        }
+
+        userRepo.save(user);
+    }
+
+    public void updateProfile(User user, String password, String email) {
+        String userEmail = user.getEmail();
+
+        // Получаем параметры из со страницы переданные клиентом. Проверим что юзер изменил email
+        boolean isEmailChanged = (email != null && !email.equals(userEmail)) ||
+                (userEmail != null && !userEmail.equals(email));
+
+        // Обновляем email у юзера если он обновился
+        if(isEmailChanged){
+            user.setEmail(email);
+
+            // Если мы обновили email то нам нужно отправить юзера новый код, для этого его нужно сгенерировать
+            if(!StringUtils.isEmpty(email)){
+                user.setActivationCode(UUID.randomUUID().toString());
+            }
+        }
+
+        // Проверяем что пользователь установил новый пароль
+        if(!StringUtils.isEmpty(password)){
+            user.setPassword(password);
+        }
+
+        userRepo.save(user);
+
+        if(isEmailChanged){
+            sendMessage(user);
+        }
+
     }
 }

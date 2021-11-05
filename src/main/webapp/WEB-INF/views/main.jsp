@@ -50,22 +50,21 @@
     <button type="submit">Найти</button>
 </form>
 
-<c:forEach items="${messages}" var="message">
-    <div>
-        <tr>
-            <td>${message.id}</td>
-            <td>${message.text}</td>
-            <td>${message.tag}</td>
-            <td>${message.authorName}</td>
+    <div class="card-columns">
+        <c:forEach items="${messages}" var="message">
             <div>
-                <c:if test="${!message.filename}" >
-                <img src="/img/${message.filename}" alt="">
-                </c:if>
+                <tr>
+                    <td>${message.id}</td>
+                    <td>${message.text}</td>
+                    <td>${message.tag}</td>
+                    <td>${message.authorName}</td>
+                </tr>
+                        <c:if test="${!message.filename}">
+                            <img src="/img/${message.filename}" alt="" class="card-img-top" style="height: 200px">
+                        </c:if>
             </div>
-            <p></p>
-        </tr>
+        </c:forEach>
     </div>
-</c:forEach>
 
 </div>
 
