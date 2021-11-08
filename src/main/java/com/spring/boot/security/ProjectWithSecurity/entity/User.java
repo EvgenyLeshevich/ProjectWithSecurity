@@ -4,6 +4,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.util.Collection;
 import java.util.Set;
 
@@ -12,10 +15,17 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    @Size(min = 2, max = 30, message = "Name should be between 2 and 30 characters")
     private String username;
+    @NotEmpty(message = "Password should not be empty")
     private String password;
+    @Transient // что бы хибернэйт не создавал такое поле в таблице бд
+//    @NotEmpty(message = "Password confirmation should not be empty")
+    private String passwordTwo;
     private boolean active;
 
+    @NotEmpty(message = "Email should not be empty")
+    @Email(message = "Please enter a valid e-mail address")
     private String email;
     private String activationCode;
 
@@ -115,5 +125,13 @@ public class User implements UserDetails {
 
     public void setActivationCode(String activationCode) {
         this.activationCode = activationCode;
+    }
+
+    public String getPasswordTwo() {
+        return passwordTwo;
+    }
+
+    public void setPasswordTwo(String passwordTwo) {
+        this.passwordTwo = passwordTwo;
     }
 }
