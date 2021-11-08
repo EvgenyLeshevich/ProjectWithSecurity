@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
@@ -21,6 +22,9 @@ public class UserService implements UserDetailsService {
 
     @Autowired
     private MainSenderService mainSender;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     // Возвращаем UserDetails - в нашем случае User
     @Override
@@ -40,6 +44,7 @@ public class UserService implements UserDetailsService {
         // задаём активационный код, генерируем его с помощью UUID.randomUUID().toString()
         // как только пользователь перейдёт по ссылке почта будет подтверждена
         user.setActivationCode(UUID.randomUUID().toString());
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         userRepo.save(user);
 
@@ -107,30 +112,60 @@ public class UserService implements UserDetailsService {
     }
 
     public void updateProfile(User user, String password, String email) {
+//        String userEmail = user.getEmail();
+//
+//        // Получаем параметры со страницы переданные клиентом. Проверим что юзер изменил email
+//        boolean isEmailChanged = (email != null && !email.equals(userEmail)) ||
+//                (userEmail != null && !userEmail.equals(email));
+//
+//        // Обновляем email у юзера если он обновился
+//        if(isEmailChanged){
+//            user.setEmail(email);
+//
+//            // Если мы обновили email то нам нужно отправить юзера новый код, для этого его нужно сгенерировать
+//            if(!StringUtils.isEmpty(email)){
+//                user.setActivationCode(UUID.randomUUID().toString());
+//            }
+//        }
+//
+//        // Проверяем что пользователь установил новый пароль
+//        if(!StringUtils.isEmpty(password)){
+//            user.setPassword(password);
+//        }
+//
+//        userRepo.save(user);
+//
+//        if(isEmailChanged){
+//            sendMessage(user);
+//        }
+
         String userEmail = user.getEmail();
+        String userPassword = user.getPassword();
 
-        // Получаем параметры из со страницы переданные клиентом. Проверим что юзер изменил email
-        boolean isEmailChanged = (email != null && !email.equals(userEmail)) ||
-                (userEmail != null && !userEmail.equals(email));
+        boolean isEmailChanged = (email != null && !email.equals(userEmail))
+                || (userEmail !=null && !userEmail.equals(email));
+        boolean isPasswordChanged = (password != null && !password.equals(userPassword))
+                || (password !=null && !userPassword.equals(email));
 
-        // Обновляем email у юзера если он обновился
         if(isEmailChanged){
             user.setEmail(email);
 
-            // Если мы обновили email то нам нужно отправить юзера новый код, для этого его нужно сгенерировать
-            if(!StringUtils.isEmpty(email)){
-                user.setActivationCode(UUID.randomUUID().toString());
+            if (!StringUtils.isEmpty(email)){   //если пользователь установил емаил
+                user.setActivationCode(UUID.randomUUID().toString());   //то мы присваеваем новый код активации
+            }
+        }
+        if (!StringUtils.isEmpty(password)){
+            user.setPassword(password);
+
+            if (!StringUtils.isEmpty(password)){   //если пользователь установил пароль
+                user.setActivationCode(UUID.randomUUID().toString());   //то мы присваеваем новый код активации
             }
         }
 
-        // Проверяем что пользователь установил новый пароль
-        if(!StringUtils.isEmpty(password)){
-            user.setPassword(password);
-        }
-
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setActive(false);
         userRepo.save(user);
-
-        if(isEmailChanged){
+        if(isEmailChanged || isPasswordChanged || (isPasswordChanged && isEmailChanged)){
             sendMessage(user);
         }
 
