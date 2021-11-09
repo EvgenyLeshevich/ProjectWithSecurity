@@ -7,11 +7,12 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Set;
 
 @Entity
-public class User implements UserDetails {
+public class User implements UserDetails, Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -20,7 +21,6 @@ public class User implements UserDetails {
     @NotEmpty(message = "Password should not be empty")
     private String password;
     @Transient // что бы хибернэйт не создавал такое поле в таблице бд
-//    @NotEmpty(message = "Password confirmation should not be empty")
     private String passwordTwo;
     private boolean active;
 

@@ -12,7 +12,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
@@ -43,6 +42,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin()
                 .loginPage("/login")
                 .permitAll()
+                .and()
+                .rememberMe() // даже если сессия в контейнере (tomcat) истекла то спринг всё равно будет искать по полученным от клиента идентификаторам наши настройки и попытается авторизовать клиента повторно (не будет работать например при перезапуске приложения), информация скорей всего будет потеряна, но можно хранить её отдельно во внешних кэшах(редис и тд), а можно в бд
                 .and()
                 .logout()
                 .permitAll();

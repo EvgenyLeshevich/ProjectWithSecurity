@@ -3,7 +3,7 @@
 <html>
 <head>
     <title>Main</title>
-    <link rel="stylesheet" href="style.css">
+    <link href="../static/css/style.css" type="text/css" rel="stylesheet" >
 <%--    Сообщаем браузеру что он должен учитывать плотность пикселей на экране утройства и делать крпнее шрифты--%>
 <%--    и элементы интерфейса для моб, планшетов и тд и нормально отображать на стройствах с небольшой плотностью(ноуты компы)--%>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -52,19 +52,21 @@
 
     <div class="card-columns">
         <c:forEach items="${messages}" var="message">
-            <div>
-                <tr>
-                    <td>${message.id}</td>
-                    <td>${message.text}</td>
-                    <td>${message.tag}</td>
-                    <td>${message.authorName}</td>
-                </tr>
-                        <c:if test="${!message.filename}">
-                            <img src="/img/${message.filename}" alt="" class="card-img-top" style="height: 200px">
-                        </c:if>
+        <div class="card my-3">
+            <c:if test="${!message.filename}">
+                <img src="/img/${message.filename}" alt="" class="card-img-top" style="height: 200px">
+            </c:if>
+            <div class="m-2">
+                <span>${message.text}</span>
+                <i>${message.tag}</i>
             </div>
+            <div class="card-footer text-muted">
+                    ${message.authorName}
+            </div>
+        </div>
         </c:forEach>
     </div>
+
 
 </div>
 

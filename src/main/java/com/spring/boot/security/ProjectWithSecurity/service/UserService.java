@@ -155,14 +155,14 @@ public class UserService implements UserDetailsService {
             }
         }
         if (!StringUtils.isEmpty(password)){
-            user.setPassword(password);
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
 
             if (!StringUtils.isEmpty(password)){   //если пользователь установил пароль
                 user.setActivationCode(UUID.randomUUID().toString());   //то мы присваеваем новый код активации
             }
         }
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+//        user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setActive(false);
         userRepo.save(user);
         if(isEmailChanged || isPasswordChanged || (isPasswordChanged && isEmailChanged)){
