@@ -155,8 +155,7 @@ public class UserService implements UserDetailsService {
             }
         }
         if (!StringUtils.isEmpty(password)){
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-
+            user.setPassword(passwordEncoder.encode(password));
             if (!StringUtils.isEmpty(password)){   //если пользователь установил пароль
                 user.setActivationCode(UUID.randomUUID().toString());   //то мы присваеваем новый код активации
             }
