@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%--Панель навигации изменяется в зависимости от ширины экрана .navbar-expand{-sm|-md|-lg|-xl}, если как у нас--%>
 <%---lg - это означает что на всех экранах данного размера или больше панель навигации отображается в развёрнутом виде--%>
 <%--navbar-light bg-light - цветовая схема--%>
@@ -18,11 +19,17 @@
                 <a class="nav-link" href="/main">Messages</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/user">User list</a>
+                <a class="nav-link" href="/user-messages/${user.id}">My messages</a>
+            </li>
+            <li class="nav-item">
+                <sec:authorize access="hasAuthority('ADMIN')">
+                    <a class="nav-link" href="/user">User list</a>
+                </sec:authorize>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="/user/profile">Profile</a>
             </li>
+
         </ul>
     </div>
 </nav>

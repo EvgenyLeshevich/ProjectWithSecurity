@@ -1,9 +1,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>UserEdit</title>
+    <title>User Messages</title>
     <link href="../static/css/style.css" type="text/css" rel="stylesheet" >
     <%--    Сообщаем браузеру что он должен учитывать плотность пикселей на экране утройства и делать крпнее шрифты--%>
     <%--    и элементы интерфейса для моб, планшетов и тд и нормально отображать на стройствах с небольшой плотностью(ноуты компы)--%>
@@ -11,6 +10,7 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
 </head>
 <body>
 <jsp:include page="/WEB-INF/tags/navbar.jsp" />
@@ -22,23 +22,47 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 
-User Editor
+    <c:if test="${isCurrentUser.id != null}">
+    <div>
+        <form method="post" enctype="multipart/form-data">
+            <input type="text" name="text" placeholder="Введите сообщение"/>
+            <input type="text" name="tag" placeholder="Тэг"/>
+            <%--        Загрузка файлов--%>
+            <input type="file" name="file">
 
-<form action="/user" method="post">
-    <input type="text" value="${user.username}" name="username">
-    <c:forEach items="${roles}" var="role">
-        <div>
-            <label><input type="checkbox" name="${role}"
-            <c:if test="${fn:contains({user.roles}, role)}"> checked="checked"
-            </c:if>>
-                    ${role}
-            </label>
-        </div>
-    </c:forEach>
-    <input type="hidden" value="${user.id}" name="userId">
-    <input type="hidden" name="_csrf" value="${_csrf.token}" />
-    <button type="submit">Save</button>
-</form>
+            <input type="hidden" name="_csrf" value="${_csrf.token}"/>
+            <input type="hidden" name="id" value="
+                                                    <c:if test="${!message}">
+                                                    ${message.id}
+                                                    </c:if>"/>
+            <button type="submit">Сохранить</button>
+        </form>
+    </div>
+    </c:if>
+
+    <div>Список сообщений</div>
+
+    <form method="get" action="/main">
+        <input type="text" name="filter" value="${filter}">
+        <button type="submit">Найти</button>
+    </form>
+
+    <div class="card-columns">
+        <c:forEach items="${messages}" var="message">
+            <div class="card my-3">
+                <c:if test="${!message.filename}">
+                    <img src="/img/${message.filename}" alt="" class="card-img-top" style="height: 200px">
+                </c:if>
+                <div class="m-2">
+                    <span>${message.text}</span>
+                    <i>${message.tag}</i>
+                </div>
+                <div class="card-footer text-muted">
+                        ${message.authorName}
+                </div>
+            </div>
+        </c:forEach>
+    </div>
 
 </div>
 </body>
